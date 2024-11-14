@@ -4,7 +4,6 @@ namespace Nokey.Authentication
 {
     public class RegisterModel
     {
-
         [Required(ErrorMessage = "User Name is required")]
         public string Username { get; set; }
 
@@ -17,6 +16,8 @@ namespace Nokey.Authentication
 
         [Required(ErrorMessage = "Role is required")]
         public string Role { get; set; }
-    }
 
+        [Required(ErrorMessage = "Phone number is required")]
+        public long PhoneNumber { get; set; }
+    }
 }

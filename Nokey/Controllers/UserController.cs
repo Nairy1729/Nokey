@@ -52,7 +52,7 @@ namespace Nokey.Controllers
 
         // Get user by ID
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(int id)
+        public async Task<IActionResult> GetUserById(string id)
         {
             var user = await _userRepository.GetUserByIdAsync(id);
             if (user == null)
@@ -65,7 +65,7 @@ namespace Nokey.Controllers
 
         // Update profile
         [HttpPut("updateProfile/{id}")]
-        public async Task<IActionResult> UpdateProfile(int id, [FromBody] Person updatedPerson)
+        public async Task<IActionResult> UpdateProfile(string id, [FromBody] Person updatedPerson)
         {
             var updatedUser = await _userRepository.UpdateProfileAsync(id, updatedPerson);
             if (updatedUser == null)
@@ -78,7 +78,7 @@ namespace Nokey.Controllers
 
         // Delete user
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
             var isDeleted = await _userRepository.DeleteUserAsync(id);
             if (!isDeleted)

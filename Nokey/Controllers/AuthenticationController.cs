@@ -6,6 +6,7 @@ using Nokey.Authentication;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Nokey.Models;
 
 namespace Nokey.Controllers
 {
@@ -16,15 +17,18 @@ namespace Nokey.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration configuration;
+        private readonly ApplicationDbContext _context;
 
         public AuthenticationController(
             UserManager<ApplicationUser> user,
             RoleManager<IdentityRole> role,
-            IConfiguration config)
+            IConfiguration config,
+            ApplicationDbContext context)
         {
             userManager = user;
             roleManager = role;
             configuration = config;
+            _context = context;
         }
 
         [HttpPost("login")]
@@ -36,22 +40,25 @@ namespace Nokey.Controllers
                 var userRoles = await userManager.GetRolesAsync(user);
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name,user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim("UserId", user.Id) // Adding user ID as a custom claim
                 };
+
                 foreach (var userRole in userRoles)
                 {
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
-                var authSigninKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
 
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
                 var token = new JwtSecurityToken(
                     issuer: configuration["JWT:Issuer"],
                     audience: configuration["JWT:Audience"],
                     expires: DateTime.Now.AddMinutes(20),
                     claims: authClaims,
-                    signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256)
-                    );
+                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
+
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -60,9 +67,6 @@ namespace Nokey.Controllers
             }
             return Unauthorized();
         }
-
-
-
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterModel model)
@@ -73,50 +77,72 @@ namespace Nokey.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response
                 {
                     Status = "Error",
-                    Message = "User already Exist!"
+                    Message = "User already exists!"
                 });
             }
 
-            ApplicationUser user = new ApplicationUser()
+            ApplicationUser user = new ApplicationUser
             {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = model.Username
-
             };
 
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new Response
-                    {
-                        Status = "Error",
-                        Message = " User Creation Failed! Pleas check the user details and try again"
-                    });
-            }
-            if (model.Role == "user")
-            {
-                if (!await roleManager.RoleExistsAsync(UserRoles.User))
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response
                 {
-                    await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-                }
-                if (await roleManager.RoleExistsAsync(UserRoles.User))
-                    await userManager.AddToRoleAsync(user, UserRoles.User);
-
+                    Status = "Error",
+                    Message = "User creation failed! Please check the details and try again."
+                });
             }
-            if (model.Role == "admin")
+
+            string assignedRole = model.Role.ToLower() == "admin" ? UserRoles.Admin : UserRoles.User;
+
+            if (assignedRole == UserRoles.Admin)
             {
                 if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
                 {
                     await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
                 }
-                if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
-
-                    await userManager.AddToRoleAsync(user, UserRoles.User);
-
+                await userManager.AddToRoleAsync(user, UserRoles.Admin);
             }
-            return Ok(new Response { Status = "Success", Message = "User Created Successfully" });
+            else
+            {
+                if (!await roleManager.RoleExistsAsync(UserRoles.User))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                }
+                await userManager.AddToRoleAsync(user, UserRoles.User);
+            }
+
+            // Create a corresponding Person entry with the same ID and role
+            var person = new Person
+            {
+                Id = user.Id, // Matching ApplicationUser ID
+                Fullname = model.Username,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                Role = assignedRole, // Synchronizing role with the registered role
+                Profile = new UserProfile // Initializing UserProfile with default values
+                {
+                    Bio = "", // Default bio
+                    Skills = new List<string>(), // Default skills (empty list)
+                    Resume = null, // Default resume (null byte array)
+                    ResumeFileName = null, // Default original resume name (null)
+                    ProfilePhoto = "" // Default profile photo
+                },
+
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            // Add Person to the database
+            _context.Persons.Add(person);
+            await _context.SaveChangesAsync();
+
+            return Ok(new Response { Status = "Success", Message = "User created successfully" });
         }
     }
 }

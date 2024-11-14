@@ -25,10 +25,10 @@ namespace Nokey.Models
         public string Logo { get; set; } // URL for the company logo
 
         [Required]
-        public int PersonId { get; set; }
+        public string PersonId { get; set; }
 
         [ForeignKey("PersonId")]
-        public Person Person { get; set; } // Navigation property for Person
+        //public Person Person { get; set; } // Navigation property for Person
 
         // Navigation property for related Jobs
         public ICollection<Job> Jobs { get; set; } = new List<Job>();

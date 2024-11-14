@@ -13,7 +13,7 @@ namespace Nokey.Repositories
             _context = context;
         }
 
-        public async Task<Application> FindApplicationAsync(int jobId, int userId)
+        public async Task<Application> FindApplicationAsync(int jobId, string userId)
         {
             return await _context.Applications
                 .FirstOrDefaultAsync(a => a.JobId == jobId && a.ApplicantId == userId);
@@ -26,11 +26,11 @@ namespace Nokey.Repositories
             return application;
         }
 
-        public async Task<IEnumerable<Application>> GetApplicationsByApplicantAsync(int userId)
+        public async Task<IEnumerable<Application>> GetApplicationsByApplicantAsync(string userId)
         {
             return await _context.Applications
                 .Include(a => a.Job)
-                    .ThenInclude(j => j.Company)
+                    .ThenInclude(j => j.CompanyId)
                 .Where(a => a.ApplicantId == userId)
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();

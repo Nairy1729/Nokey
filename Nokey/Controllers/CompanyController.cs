@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Nokey.Models;
 using Nokey.Repositories;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Nokey.Controllers
 {
@@ -30,16 +31,32 @@ namespace Nokey.Controllers
                 return BadRequest(new { message = "You can't register the same company.", success = false });
             }
 
-            company.PersonId = GetUserId();
-            var newCompany = await _companyRepository.RegisterCompanyAsync(company);
+            try
+            {
+                company.PersonId = GetUserId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message, success = false });
+            }
 
+            var newCompany = await _companyRepository.RegisterCompanyAsync(company);
             return Created("", new { message = "Company registered successfully.", company = newCompany, success = true });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetCompanies()
         {
-            int userId = GetUserId();
+            string userId;
+            try
+            {
+                userId = GetUserId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message, success = false });
+            }
+
             var companies = await _companyRepository.GetCompaniesByUserIdAsync(userId);
 
             if (companies == null)
@@ -66,9 +83,14 @@ namespace Nokey.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateCompany(int id, [FromForm] Company updatedCompany, IFormFile logoFile)
         {
+            if (updatedCompany == null)
+            {
+                return BadRequest(new { message = "Updated company details are required.", success = false });
+            }
+
             if (logoFile != null)
             {
-                var logoUri = await UploadLogoToCloudinary(logoFile); // assuming this helper function exists
+                var logoUri = await UploadLogoToCloudinary(logoFile);
                 updatedCompany.Logo = logoUri;
             }
 
@@ -82,15 +104,22 @@ namespace Nokey.Controllers
             return Ok(new { message = "Company information updated.", success = true });
         }
 
-        private int GetUserId()
+        private string GetUserId()
         {
-            // Extract user ID from JWT token claims.
-            return int.Parse(User.FindFirst("sub")?.Value);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                throw new UnauthorizedAccessException("User ID is not available in token claims.");
+            }
+
+            return userIdClaim; // Return as string (no need to parse it as int)
         }
+
 
         private async Task<string> UploadLogoToCloudinary(IFormFile file)
         {
-            // Upload logic here
+            // Placeholder upload logic; replace with actual implementation
             return "logo-url"; // Placeholder for actual Cloudinary URL
         }
     }

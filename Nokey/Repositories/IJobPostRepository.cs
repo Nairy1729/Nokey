@@ -10,6 +10,6 @@ namespace Nokey.Repositories
         Task<Job> PostJobAsync(Job job);
         Task<IEnumerable<Job>> GetAllJobsAsync(string keyword);
         Task<Job> GetJobByIdAsync(int jobId);
-        Task<IEnumerable<Job>> GetAdminJobsAsync(int adminId);
+        Task<IEnumerable<Job>> GetAdminJobsAsync(string adminId);
     }
 }

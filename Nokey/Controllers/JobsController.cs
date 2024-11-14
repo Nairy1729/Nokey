@@ -26,7 +26,7 @@ namespace Nokey.Controllers
         public async Task<IActionResult> ApplyJob(int id)
         {
             // Retrieve userId from token
-            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            string userId = (User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             if (await _applicationRepository.FindApplicationAsync(id, userId) != null)
             {
@@ -55,7 +55,7 @@ namespace Nokey.Controllers
         public async Task<IActionResult> GetAppliedJobs()
         {
             // Retrieve userId from token
-            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            string userId = (User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             var applications = await _applicationRepository.GetApplicationsByApplicantAsync(userId);
 

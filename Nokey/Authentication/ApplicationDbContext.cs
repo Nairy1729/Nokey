@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Nokey.models;
 using Nokey.Models;
+using System.Collections.Generic;
 
 namespace Nokey.Authentication
 {
@@ -11,8 +12,7 @@ namespace Nokey.Authentication
             base(options)
         { }
 
-        //Scaffold-DbContext "Server=NAIRY;Database=API_CF_Demo;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models/SecondDatabase -Context SecondDbContext -ContextDir Data/Contexts -Force
-
+        // DbSets for your entities
         public DbSet<Person> Persons { get; set; }
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Company> Companies { get; set; }
@@ -23,58 +23,62 @@ namespace Nokey.Authentication
         {
             base.OnModelCreating(modelBuilder);
 
-            // User (Person) entity configuration
+            // Configure User (Person) entity with UserProfile
             modelBuilder.Entity<Person>()
                 .OwnsOne(u => u.Profile, profile =>
                 {
+                    // Configure Skills as a comma-separated list if Skills is a collection in UserProfile
                     profile.Property(p => p.Skills)
                         .HasConversion(
-                            v => string.Join(',', v),
-                            v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            v => string.Join(',', v), // Convert list to a comma-separated string
+                            v => v.Split(',', StringSplitOptions.RemoveEmptyEntries) // Convert string back to list
                                   .ToList()
                         );
+
+                    profile.Property(p => p.Bio).HasMaxLength(500); // Limit Bio length
+                    profile.Property(p => p.Resume).HasColumnType("varbinary(max)"); // Store Resume as binary data if needed
+                    profile.Property(p => p.ProfilePhoto).HasMaxLength(255); // Store Profile Photo path or URL
                 });
 
+            // Ensure email uniqueness for Person
             modelBuilder.Entity<Person>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            // Company and Job relationship configuration
+            // Job-Company relationship (using foreign key without navigation property)
             modelBuilder.Entity<Job>()
-                .HasOne(j => j.Company)
-                .WithMany(c => c.Jobs) // Use 'Jobs' as the collection property in Company
+                .HasOne<Company>()
+                .WithMany()
                 .HasForeignKey(j => j.CompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Job and JobRequirement relationship configuration
+            // Job-JobRequirement relationship (using foreign key without navigation property)
             modelBuilder.Entity<JobRequirement>()
-                .HasOne(jr => jr.Job)
-                .WithMany(j => j.Requirements)
+                .HasOne<Job>()
+                .WithMany()
                 .HasForeignKey(jr => jr.JobId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Job and Person (User) relationship for CreatedBy field
+            // Job-CreatedBy relationship (using foreign key without navigation property)
             modelBuilder.Entity<Job>()
-                .HasOne(j => j.CreatedBy)
+                .HasOne<Person>()
                 .WithMany()
                 .HasForeignKey(j => j.CreatedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Application relationships with Job and Person (User)
+            // Application-Job relationship (using foreign key without navigation property)
             modelBuilder.Entity<Application>()
-                .HasOne(a => a.Job)
-                .WithMany(j => j.Applications)
+                .HasOne<Job>()
+                .WithMany()
                 .HasForeignKey(a => a.JobId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Change this to NoAction to prevent cascading delete for Applicant
+            // Application-Applicant relationship (using foreign key without navigation property)
             modelBuilder.Entity<Application>()
-                .HasOne(a => a.Applicant)
+                .HasOne<Person>()
                 .WithMany()
                 .HasForeignKey(a => a.ApplicantId)
-                .OnDelete(DeleteBehavior.NoAction); // Prevent cascading deletes for ApplicantId
+                .OnDelete(DeleteBehavior.NoAction);
         }
-
-
     }
 }

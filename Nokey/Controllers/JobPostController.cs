@@ -24,7 +24,7 @@ namespace Nokey.Controllers
         public async Task<IActionResult> PostJob([FromBody] Job job)
         {
             if (string.IsNullOrWhiteSpace(job.Title) || string.IsNullOrWhiteSpace(job.Description) ||
-                job.Salary <= 0 || job.CompanyId <= 0 || job.CreatedById <= 0)
+                job.Salary <= 0 || job.CompanyId <= 0 || job.CreatedById != null)
             {
                 return BadRequest(new { message = "Something is missing or incorrect.", success = false });
             }
@@ -76,7 +76,7 @@ namespace Nokey.Controllers
         [HttpGet("adminJobs")]
         public async Task<IActionResult> GetAdminJobs()
         {
-            int adminId = GetUserId();
+            string adminId = GetUserId();
             var jobs = await _jobRepository.GetAdminJobsAsync(adminId);
 
             if (jobs == null || !jobs.Any())
@@ -87,10 +87,10 @@ namespace Nokey.Controllers
             return Ok(new { jobs, success = true });
         }
 
-        private int GetUserId()
+        private string GetUserId()
         {
             // Extract user ID from JWT token claims.
-            return int.Parse(User.FindFirst("sub")?.Value);
+            return (User.FindFirst("sub")?.Value);
         }
     }
 }

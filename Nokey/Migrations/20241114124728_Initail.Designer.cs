@@ -12,8 +12,8 @@ using Nokey.Authentication;
 namespace Nokey.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241113043345_intitial")]
-    partial class intitial
+    [Migration("20241114124728_Initail")]
+    partial class Initail
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -230,8 +230,9 @@ namespace Nokey.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<string>("ApplicantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -282,8 +283,9 @@ namespace Nokey.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
+                    b.Property<string>("PersonId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -310,8 +312,12 @@ namespace Nokey.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedById")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -355,13 +361,10 @@ namespace Nokey.Migrations
                     b.ToTable("JobRequirements");
                 });
 
-            modelBuilder.Entity("Nokey.models.Person", b =>
+            modelBuilder.Entity("Nokey.Models.Person", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -374,12 +377,12 @@ namespace Nokey.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("PhoneNumber")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -445,7 +448,7 @@ namespace Nokey.Migrations
 
             modelBuilder.Entity("Nokey.Models.Application", b =>
                 {
-                    b.HasOne("Nokey.models.Person", "Applicant")
+                    b.HasOne("Nokey.Models.Person", "Applicant")
                         .WithMany()
                         .HasForeignKey("ApplicantId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -464,7 +467,7 @@ namespace Nokey.Migrations
 
             modelBuilder.Entity("Nokey.Models.Company", b =>
                 {
-                    b.HasOne("Nokey.models.Person", "Person")
+                    b.HasOne("Nokey.Models.Person", "Person")
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -481,7 +484,7 @@ namespace Nokey.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Nokey.models.Person", "CreatedBy")
+                    b.HasOne("Nokey.Models.Person", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -503,27 +506,32 @@ namespace Nokey.Migrations
                     b.Navigation("Job");
                 });
 
-            modelBuilder.Entity("Nokey.models.Person", b =>
+            modelBuilder.Entity("Nokey.Models.Person", b =>
                 {
-                    b.OwnsOne("Nokey.models.UserProfile", "Profile", b1 =>
+                    b.HasOne("Nokey.Authentication.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Nokey.Models.UserProfile", "Profile", b1 =>
                         {
-                            b1.Property<int>("PersonId")
-                                .HasColumnType("int");
+                            b1.Property<string>("PersonId")
+                                .HasColumnType("nvarchar(450)");
 
                             b1.Property<string>("Bio")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(500)
+                                .HasColumnType("nvarchar(500)");
 
                             b1.Property<string>("ProfilePhoto")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
 
-                            b1.Property<string>("Resume")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                            b1.Property<byte[]>("Resume")
+                                .HasColumnType("varbinary(max)");
 
-                            b1.Property<string>("ResumeOriginalName")
-                                .IsRequired()
+                            b1.Property<string>("ResumeFileName")
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Skills")
@@ -537,6 +545,8 @@ namespace Nokey.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("PersonId");
                         });
+
+                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Profile")
                         .IsRequired();

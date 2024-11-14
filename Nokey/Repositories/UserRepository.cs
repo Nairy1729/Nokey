@@ -38,7 +38,7 @@ namespace Nokey.Repositories
         }
 
         // Get user by ID
-        public async Task<Person> GetUserByIdAsync(int id)
+        public async Task<Person> GetUserByIdAsync(string id)
         {
             return await _context.Persons
                                  .Include(p => p.Profile)
@@ -52,7 +52,7 @@ namespace Nokey.Repositories
         }
 
         // Update user profile
-        public async Task<Person> UpdateProfileAsync(int id, Person updatedPerson)
+        public async Task<Person> UpdateProfileAsync(string id, Person updatedPerson)
         {
             var existingUser = await _context.Persons.FirstOrDefaultAsync(p => p.Id == id);
 
@@ -69,7 +69,7 @@ namespace Nokey.Repositories
         }
 
         // Delete user by ID
-        public async Task<bool> DeleteUserAsync(int id)
+        public async Task<bool> DeleteUserAsync(string id)
         {
             var user = await _context.Persons.FirstOrDefaultAsync(p => p.Id == id);
             if (user == null) return false;

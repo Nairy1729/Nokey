@@ -25,7 +25,7 @@ namespace Nokey.Repositories
             return company;
         }
 
-        public async Task<IEnumerable<Company>> GetCompaniesByUserIdAsync(int userId)
+        public async Task<IEnumerable<Company>> GetCompaniesByUserIdAsync(string userId)
         {
             return await _context.Companies.Where(c => c.PersonId == userId).ToListAsync();
         }

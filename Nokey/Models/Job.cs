@@ -1,6 +1,8 @@
 ﻿using Nokey.models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nokey.Models
 {
@@ -15,13 +17,21 @@ namespace Nokey.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        // Foreign Key to Company
         public int CompanyId { get; set; }
-        public Company Company { get; set; }
+        //public Company Company { get; set; }
 
-        public int CreatedById { get; set; }
-        public Person CreatedBy { get; set; }  // Navigation property to Person who created the job
+        // Foreign Key to Person (CreatedBy) - changed to string to match Person.Id
+        [Required]
+        public string CreatedById { get; set; }  // Changed to string
 
-        public ICollection<JobRequirement> Requirements { get; set; } = new List<JobRequirement>(); // Navigation to JobRequirements
-        public ICollection<Application> Applications { get; set; } = new List<Application>(); // Navigation to Applications
+        [ForeignKey("CreatedById")]
+        //public Person CreatedBy { get; set; }  // Navigation property to Person who created the job
+
+        // Navigation to JobRequirements
+        public ICollection<JobRequirement> Requirements { get; set; } = new List<JobRequirement>();
+
+        // Navigation to Applications
+        //public ICollection<Application> Applications { get; set; } = new List<Application>();
     }
 }

@@ -10,9 +10,9 @@ namespace Nokey.Repositories
     {
         Task<Person> RegisterAsync(Person person);
         Task<Person> GetUserByEmailAsync(string email);
-        Task<Person> GetUserByIdAsync(int id);
+        Task<Person> GetUserByIdAsync(string id);
         Task<List<Person>> GetAllUsersAsync();
-        Task<Person> UpdateProfileAsync(int id, Person updatedPerson);
-        Task<bool> DeleteUserAsync(int id);
+        Task<Person> UpdateProfileAsync(string id, Person updatedPerson);
+        Task<bool> DeleteUserAsync(string id);
     }
 }
