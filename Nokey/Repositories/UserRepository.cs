@@ -3,7 +3,6 @@ using Nokey.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Nokey.models;
 using Nokey.Authentication;
 
 namespace Nokey.Repositories

@@ -28,13 +28,15 @@ namespace Nokey.Repositories
 
         public async Task<IEnumerable<Application>> GetApplicationsByApplicantAsync(string userId)
         {
-            return await _context.Applications
-                .Include(a => a.Job)
-                    .ThenInclude(j => j.CompanyId)
+            var applications = await _context.Applications
                 .Where(a => a.ApplicantId == userId)
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
+
+            return applications;
         }
+
+
 
         public async Task<Application> GetApplicationByIdAsync(int applicationId)
         {

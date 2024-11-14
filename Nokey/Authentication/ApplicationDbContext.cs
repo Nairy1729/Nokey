@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Nokey.models;
 using Nokey.Models;
 using System.Collections.Generic;
 
@@ -17,7 +16,7 @@ namespace Nokey.Authentication
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<Application> Applications { get; set; }
-        public DbSet<JobRequirement> JobRequirements { get; set; }
+        //public DbSet<JobRequirement> JobRequirements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -50,35 +49,28 @@ namespace Nokey.Authentication
                 .HasOne<Company>()
                 .WithMany()
                 .HasForeignKey(j => j.CompanyId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Job-JobRequirement relationship (using foreign key without navigation property)
-            modelBuilder.Entity<JobRequirement>()
-                .HasOne<Job>()
-                .WithMany()
-                .HasForeignKey(jr => jr.JobId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade);  // Cascade delete is fine here for company-job relationship
 
             // Job-CreatedBy relationship (using foreign key without navigation property)
             modelBuilder.Entity<Job>()
                 .HasOne<Person>()
                 .WithMany()
                 .HasForeignKey(j => j.CreatedById)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);  // Prevent cascading delete on Job's CreatedBy
 
             // Application-Job relationship (using foreign key without navigation property)
             modelBuilder.Entity<Application>()
                 .HasOne<Job>()
                 .WithMany()
                 .HasForeignKey(a => a.JobId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);  // Prevent cascading delete on Application's Job
 
             // Application-Applicant relationship (using foreign key without navigation property)
             modelBuilder.Entity<Application>()
                 .HasOne<Person>()
                 .WithMany()
                 .HasForeignKey(a => a.ApplicantId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction);  // No cascading delete on Application's Applicant
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Nokey.models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -31,7 +30,7 @@ namespace Nokey.Models
         //public Person Person { get; set; } // Navigation property for Person
 
         // Navigation property for related Jobs
-        public ICollection<Job> Jobs { get; set; } = new List<Job>();
+        //public ICollection<Job> Jobs { get; set; } = new List<Job>();
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

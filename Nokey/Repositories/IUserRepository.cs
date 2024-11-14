@@ -1,5 +1,4 @@
-﻿using Nokey.models;
-using Nokey.Models;
+﻿using Nokey.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -283,7 +283,7 @@ namespace Nokey.Migrations
 
                     b.Property<string>("PersonId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -293,8 +293,6 @@ namespace Nokey.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PersonId");
 
                     b.ToTable("Companies");
                 });
@@ -321,6 +319,11 @@ namespace Nokey.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RequirementsString")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Requirements");
+
                     b.Property<decimal>("Salary")
                         .HasColumnType("decimal(18,2)");
 
@@ -335,28 +338,6 @@ namespace Nokey.Migrations
                     b.HasIndex("CreatedById");
 
                     b.ToTable("Jobs");
-                });
-
-            modelBuilder.Entity("Nokey.models.JobRequirement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("JobId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RequirementDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobId");
-
-                    b.ToTable("JobRequirements");
                 });
 
             modelBuilder.Entity("Nokey.Models.Person", b =>
@@ -446,72 +427,36 @@ namespace Nokey.Migrations
 
             modelBuilder.Entity("Nokey.Models.Application", b =>
                 {
-                    b.HasOne("Nokey.Models.Person", "Applicant")
+                    b.HasOne("Nokey.Models.Person", null)
                         .WithMany()
                         .HasForeignKey("ApplicantId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Nokey.Models.Job", "Job")
-                        .WithMany("Applications")
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Applicant");
-
-                    b.Navigation("Job");
-                });
-
-            modelBuilder.Entity("Nokey.Models.Company", b =>
-                {
-                    b.HasOne("Nokey.Models.Person", "Person")
+                    b.HasOne("Nokey.Models.Job", null)
                         .WithMany()
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("Nokey.Models.Job", b =>
                 {
-                    b.HasOne("Nokey.Models.Company", "Company")
-                        .WithMany("Jobs")
+                    b.HasOne("Nokey.Models.Company", null)
+                        .WithMany()
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Nokey.Models.Person", "CreatedBy")
+                    b.HasOne("Nokey.Models.Person", null)
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Company");
-
-                    b.Navigation("CreatedBy");
-                });
-
-            modelBuilder.Entity("Nokey.models.JobRequirement", b =>
-                {
-                    b.HasOne("Nokey.Models.Job", "Job")
-                        .WithMany("Requirements")
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Job");
                 });
 
             modelBuilder.Entity("Nokey.Models.Person", b =>
                 {
-                    b.HasOne("Nokey.Authentication.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.OwnsOne("Nokey.Models.UserProfile", "Profile", b1 =>
                         {
                             b1.Property<string>("PersonId")
@@ -544,22 +489,8 @@ namespace Nokey.Migrations
                                 .HasForeignKey("PersonId");
                         });
 
-                    b.Navigation("ApplicationUser");
-
                     b.Navigation("Profile")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Nokey.Models.Company", b =>
-                {
-                    b.Navigation("Jobs");
-                });
-
-            modelBuilder.Entity("Nokey.Models.Job", b =>
-                {
-                    b.Navigation("Applications");
-
-                    b.Navigation("Requirements");
                 });
 #pragma warning restore 612, 618
         }
