@@ -4,6 +4,7 @@ using Nokey.Models;
 using Nokey.Repositories;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Nokey.Controllers
 {
@@ -18,46 +19,48 @@ namespace Nokey.Controllers
             _companyRepository = companyRepository;
         }
 
-        [HttpPost("register")]
+        [HttpPost("register-company")]
         public async Task<IActionResult> RegisterCompany([FromBody] Company company)
         {
-            if (string.IsNullOrEmpty(company.Name))
-            {
-                return BadRequest(new { message = "Company name is required.", success = false });
-            }
-
-            if (await _companyRepository.CompanyExistsAsync(company.Name))
-            {
-                return BadRequest(new { message = "You can't register the same company.", success = false });
-            }
-
             try
             {
-                company.PersonId = GetUserId();
+                var personId = User.FindFirst("UserId")?.Value;
+
+                if (string.IsNullOrEmpty(personId))
+                {
+                    return Unauthorized(new { message = "User is not authenticated." });
+                }
+
+                var result = await _companyRepository.RegisterCompanyAsync(company, personId);
+
+                return CreatedAtAction(nameof(GetCompanyById), new { id = result.Id }, result);
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new { message = ex.Message, success = false });
+                return Unauthorized(new { message = ex.Message });
             }
-
-            var newCompany = await _companyRepository.RegisterCompanyAsync(company);
-            return Created("", new { message = "Company registered successfully.", company = newCompany, success = true });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetCompanies()
         {
-            string userId;
+            string personId;
             try
             {
-                userId = GetUserId();
+                personId = User.FindFirst("UserId")?.Value;
             }
             catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(new { message = ex.Message, success = false });
             }
 
-            var companies = await _companyRepository.GetCompaniesByUserIdAsync(userId);
+            var companies = await _companyRepository.GetCompaniesByUserIdAsync(personId);
 
             if (companies == null)
             {

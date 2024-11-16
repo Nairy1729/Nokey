@@ -13,6 +13,9 @@ namespace Nokey.Models
         public string Id { get; set; } // Primary key matching ApplicationUser ID
 
         [Required]
+        public string UserName { get; set; }
+
+        [Required]
         public string Fullname { get; set; }
 
         [Required]

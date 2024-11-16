@@ -52,8 +52,8 @@ namespace Nokey.Controllers
 
                 var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
                 var token = new JwtSecurityToken(
-                    issuer: configuration["JWT:Issuer"],
-                    audience: configuration["JWT:Audience"],
+                    issuer: configuration["Jwt:Issuer"],
+                    audience: configuration["Jwt:Audience"],
                     expires: DateTime.Now.AddMinutes(20),
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
@@ -121,7 +121,8 @@ namespace Nokey.Controllers
             var person = new Person
             {
                 Id = user.Id, // Matching ApplicationUser ID
-                Fullname = model.Username,
+                UserName = model.Username,
+                Fullname = model.FullName,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
                 Role = assignedRole, // Synchronizing role with the registered role
@@ -144,5 +145,8 @@ namespace Nokey.Controllers
 
             return Ok(new Response { Status = "Success", Message = "User created successfully" });
         }
+
+
+
     }
 }

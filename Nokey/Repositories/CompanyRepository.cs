@@ -6,6 +6,9 @@ using Nokey.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using Nokey.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using static Nokey.Controllers.AuthenticationController;
 
 namespace Nokey.Repositories
 {
@@ -18,12 +21,24 @@ namespace Nokey.Repositories
             _context = context;
         }
 
-        public async Task<Company> RegisterCompanyAsync(Company company)
+        public async Task<Company> RegisterCompanyAsync(Company company, string personId)
         {
+            if (string.IsNullOrEmpty(personId))
+            {
+                throw new UnauthorizedAccessException("User is not authenticated.");
+            }
+
+            company.PersonId = personId;
+
             _context.Companies.Add(company);
+
             await _context.SaveChangesAsync();
+
             return company;
         }
+
+
+
 
         public async Task<IEnumerable<Company>> GetCompaniesByUserIdAsync(string userId)
         {
