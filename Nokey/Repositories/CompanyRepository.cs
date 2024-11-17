@@ -45,10 +45,10 @@ namespace Nokey.Repositories
             return await _context.Companies.Where(c => c.PersonId == userId).ToListAsync();
         }
 
-        public async Task<Company> GetCompanyByIdAsync(int companyId)
-        {
-            return await _context.Companies.FindAsync(companyId);
-        }
+        //public async Task<Company> GetCompanyByIdAsync(int companyId)
+        //{
+        //    return await _context.Companies.FindAsync(companyId);
+        //}
 
         public async Task<Company> UpdateCompanyAsync(int companyId, Company updatedCompany)
         {
@@ -70,5 +70,13 @@ namespace Nokey.Repositories
         {
             return await _context.Companies.AnyAsync(c => c.Name == companyName);
         }
+
+        public async Task<Company> GetCompanyByIdAsync(int companyId)
+        {
+            return await _context.Companies
+                                 .Where(c => c.Id == companyId)
+                                 .FirstOrDefaultAsync();
+        }
+
     }
 }

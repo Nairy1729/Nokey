@@ -25,14 +25,19 @@ namespace Nokey.Repositories
             return job;
         }
 
-        public async Task<IEnumerable<Job>> GetAllJobsAsync(string keyword)
+        public async Task<IEnumerable<Job>> GetAllJobsAsync()
         {
+            // If keyword is null or empty, return all jobs
+
             return await _context.Jobs
-                .Where(j => j.Title.Contains(keyword) || j.Description.Contains(keyword))
-                .Include(j => j.CompanyId)
                 .OrderByDescending(j => j.CreatedAt)
-                .ToListAsync();
+                  .ToListAsync();
+
+
+
         }
+
+
 
         public async Task<Job> GetJobByIdAsync(int jobId)
         {
@@ -48,7 +53,7 @@ namespace Nokey.Repositories
                     CompanyId = j.CompanyId,
                     CreatedById = j.CreatedById,
                     // Manually include applications by joining with the Applications table using the JobId foreign key
-                     // Get all related applications
+                    // Get all related applications
                 })
                 .FirstOrDefaultAsync();
         }
@@ -58,9 +63,41 @@ namespace Nokey.Repositories
         {
             return await _context.Jobs
                 .Where(j => j.CreatedById == adminId)
-                .Include(j => j.CompanyId)
                 .OrderByDescending(j => j.CreatedAt)
                 .ToListAsync();
         }
+
+        public async Task<Job> UpdateJobAsync(Job job)
+        {
+            var existingJob = await _context.Jobs.FindAsync(job.Id);
+
+            if (existingJob == null)
+                return null;
+
+            // Update only the provided fields
+            existingJob.Title = string.IsNullOrWhiteSpace(job.Title) ? existingJob.Title : job.Title;
+            existingJob.Description = string.IsNullOrWhiteSpace(job.Description) ? existingJob.Description : job.Description;
+            existingJob.Salary = job.Salary > 0 ? job.Salary : existingJob.Salary;
+
+            _context.Jobs.Update(existingJob);
+            await _context.SaveChangesAsync();
+
+            return existingJob;
+        }
+
+        public async Task<bool> DeleteJobAsync(int jobId)
+        {
+            var job = await _context.Jobs.FindAsync(jobId);
+
+            if (job == null)
+                return false;
+
+            _context.Jobs.Remove(job);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+
     }
 }
