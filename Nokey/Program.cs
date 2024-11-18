@@ -45,12 +45,17 @@ namespace Nokey
                 };
             });
 
+            builder.Services.AddHttpContextAccessor(); // This is required for IHttpContextAccessor
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
             // Register Repositories
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IPersonRepository, PersonRepository>();
             builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
             builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
             builder.Services.AddScoped<IJobPostRepository, JobPostRepository>(); // Fixed typo here
             builder.Services.AddScoped<IJobRepository, JobRepository>();
+            builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+
 
             builder.Services.AddControllers();
 

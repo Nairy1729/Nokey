@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Nokey.Authentication;
@@ -117,29 +116,19 @@ namespace Nokey.Controllers
                 await userManager.AddToRoleAsync(user, UserRoles.User);
             }
 
-            // Create a corresponding Person entry with the same ID and role
             var person = new Person
             {
-                Id = user.Id, // Matching ApplicationUser ID
+                Id = user.Id,
                 UserName = model.Username,
                 Fullname = model.FullName,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
-                Role = assignedRole, // Synchronizing role with the registered role
-                Profile = new UserProfile // Initializing UserProfile with default values
-                {
-                    Bio = "", // Default bio
-                    Skills = new List<string>(), // Default skills (empty list)
-                    Resume = null, // Default resume (null byte array)
-                    ResumeFileName = null, // Default original resume name (null)
-                    ProfilePhoto = "" // Default profile photo
-                },
+                Role = assignedRole, 
 
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
 
-            // Add Person to the database
             _context.Persons.Add(person);
             await _context.SaveChangesAsync();
 

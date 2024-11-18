@@ -9,19 +9,15 @@ namespace Nokey.Models
         [Key]
         public int Id { get; set; }
 
-        // Foreign Key to Job
         [Required]
         public int JobId { get; set; }
 
         [ForeignKey("JobId")]
-        // Job Job { get; set; }
 
-        // Foreign Key to User (Applicant) - now as a string to match Person Id
         [Required]
         public string ApplicantId { get; set; }
 
         [ForeignKey("ApplicantId")]
-        //public Person Applicant { get; set; }
 
         [Required]
         public ApplicationStatus Status { get; set; } = ApplicationStatus.Pending;
@@ -30,7 +26,6 @@ namespace Nokey.Models
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        // Method to update timestamp
         public void UpdateTimestamp()
         {
             UpdatedAt = DateTime.UtcNow;

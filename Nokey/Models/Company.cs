@@ -27,10 +27,7 @@ namespace Nokey.Models
         public string PersonId { get; set; }
 
         [ForeignKey("PersonId")]
-        //public Person Person { get; set; } // Navigation property for Person
 
-        // Navigation property for related Jobs
-        //public ICollection<Job> Jobs { get; set; } = new List<Job>();
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

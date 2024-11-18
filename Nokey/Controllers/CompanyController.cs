@@ -122,7 +122,6 @@ namespace Nokey.Controllers
 
         private async Task<string> UploadLogoToCloudinary(IFormFile file)
         {
-            // Placeholder upload logic; replace with actual implementation
             return "logo-url"; // Placeholder for actual Cloudinary URL
         }
     }

@@ -28,14 +28,12 @@ namespace Nokey.Controllers
         {
             try
             {
-                // Check if all necessary fields for job posting are provided
                 if (string.IsNullOrWhiteSpace(job.Title) || string.IsNullOrWhiteSpace(job.Description) ||
                     job.Salary <= 0 || job.CompanyId <= 0)
                 {
                     return BadRequest(new { message = "Something is missing or incorrect.", success = false });
                 }
 
-                // Get the user ID from the currently authenticated user
                 var userId = User.FindFirst("UserId")?.Value;
 
                 if (string.IsNullOrEmpty(userId))
@@ -43,7 +41,6 @@ namespace Nokey.Controllers
                     return Unauthorized(new { message = "User is not authenticated." });
                 }
 
-                // Ensure the user is posting jobs for a company they have registered
                 var company = await _companyRepository.GetCompanyByIdAsync(job.CompanyId);
 
                 if (company == null || company.PersonId != userId)
@@ -51,25 +48,20 @@ namespace Nokey.Controllers
                     return BadRequest(new { message = "You can only post jobs for a company you have registered.", success = false });
                 }
 
-                // Set the CreatedById to the currently authenticated user
                 job.CreatedById = userId;
 
-                // If requirements are not provided, initialize as empty list
                 if (job.Requirements == null || !job.Requirements.Any())
                 {
                     job.Requirements = new List<string>();
                 }
 
-                // If RequirementsString is provided, split it into a list
                 if (!string.IsNullOrWhiteSpace(job.RequirementsString))
                 {
                     job.Requirements = job.RequirementsString.Split(',').ToList();
                 }
 
-                // Post the job via the repository
                 var newJob = await _jobRepository.PostJobAsync(job);
 
-                // Return the response indicating the job was created
                 return Created("", new { message = "New job created successfully.", job = newJob, success = true });
             }
             catch (Exception ex)
@@ -85,7 +77,6 @@ namespace Nokey.Controllers
         [HttpGet("getAllJobs")]
         public async Task<IActionResult> GetAllJobs()
         {
-            // Retrieve all jobs, optionally filtered by keyword
             var jobs = await _jobRepository.GetAllJobsAsync();
 
             if (jobs == null || !jobs.Any())
