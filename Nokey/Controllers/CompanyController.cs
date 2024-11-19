@@ -20,10 +20,31 @@ namespace Nokey.Controllers
         }
 
         [HttpPost("register-company")]
-        public async Task<IActionResult> RegisterCompany([FromBody] Company company)
+        public async Task<IActionResult> RegisterCompany([FromForm] Company company, IFormFile logoFile)
         {
             try
             {
+                if (logoFile == null || logoFile.Length == 0)
+                {
+                    return BadRequest(new { message = "Logo file is required.", success = false });
+                }
+
+                if (logoFile.ContentType != "image/jpeg" && logoFile.ContentType != "image/jpg")
+                {
+                    return BadRequest(new { message = "Only JPG or JPEG file formats are allowed for the logo.", success = false });
+                }
+
+                if (logoFile.Length > 2 * 1024 * 1024) // 2MB limit
+                {
+                    return BadRequest(new { message = "Logo file size must be less than 2MB.", success = false });
+                }
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    await logoFile.CopyToAsync(memoryStream);
+                    company.Logo = memoryStream.ToArray(); // Store the logo as a byte array
+                }
+
                 var personId = User.FindFirst("UserId")?.Value;
 
                 if (string.IsNullOrEmpty(personId))
@@ -31,6 +52,7 @@ namespace Nokey.Controllers
                     return Unauthorized(new { message = "User is not authenticated." });
                 }
 
+                // Register the company
                 var result = await _companyRepository.RegisterCompanyAsync(company, personId);
                 return CreatedAtAction(nameof(GetCompanyById), new { id = result.Id }, result);
             }
@@ -43,6 +65,7 @@ namespace Nokey.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetCompanies()
