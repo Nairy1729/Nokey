@@ -1,5 +1,4 @@
-﻿// IJobRepository.cs
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nokey.Models;
@@ -12,9 +11,7 @@ namespace Nokey.Repositories
         Task<IEnumerable<Job>> GetAllJobsAsync();
         Task<Job> GetJobByIdAsync(int jobId);
         Task<IEnumerable<Job>> GetAdminJobsAsync(string adminId);
-
         Task<Job> UpdateJobAsync(Job job);
-
         Task<bool> DeleteJobAsync(int jobId);
 
 

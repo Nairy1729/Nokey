@@ -41,7 +41,7 @@ namespace Nokey.Controllers
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim("UserId", user.Id) // Adding user ID as a custom claim
+                    new Claim("UserId", user.Id)
                 };
 
                 foreach (var userRole in userRoles)
@@ -123,8 +123,8 @@ namespace Nokey.Controllers
                 Fullname = model.FullName,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
-                Role = assignedRole, 
-
+                Role = assignedRole,
+                IsDeleted = false,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -134,8 +134,5 @@ namespace Nokey.Controllers
 
             return Ok(new Response { Status = "Success", Message = "User created successfully" });
         }
-
-
-
     }
 }

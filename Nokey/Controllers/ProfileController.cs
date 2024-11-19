@@ -24,7 +24,6 @@ namespace Nokey.Controllers
         public IActionResult GetProfile()
         {
             var userId = User.FindFirst("UserId")?.Value;
-
             var profile = _profileRepository.GetProfileByUserId(userId);
 
             if (profile == null)
@@ -37,10 +36,13 @@ namespace Nokey.Controllers
         public async Task<IActionResult> CreateOrUpdateProfile([FromForm] ProfileCreateUpdateDto profileDto)
         {
             var userId = User.FindFirst("UserId")?.Value;
-
             var updatedProfile = await _profileRepository.CreateOrUpdateProfileAsync(
                 userId,
-                new Profile { Bio = profileDto.Bio, Skills = profileDto.Skills.Split(',').ToList() },
+                new Profile
+                {
+                    Bio = profileDto.Bio,
+                    Skills = profileDto.Skills.Split(',').ToList()
+                },
                 profileDto.Resume,
                 profileDto.ProfilePhoto);
 
@@ -51,7 +53,6 @@ namespace Nokey.Controllers
         public IActionResult DeleteProfile()
         {
             var userId = User.FindFirst("UserId")?.Value;
-
             var success = _profileRepository.DeleteProfile(userId);
 
             if (!success)
@@ -64,7 +65,6 @@ namespace Nokey.Controllers
         public IActionResult DownloadResume()
         {
             var userId = User.FindFirst("UserId")?.Value;
-
             var resume = _profileRepository.GetResume(userId);
 
             if (resume == null)
@@ -77,7 +77,6 @@ namespace Nokey.Controllers
         public IActionResult DownloadProfilePhoto()
         {
             var userId = User.FindFirst("UserId")?.Value;
-
             var filePath = _profileRepository.GetProfilePhotoPath(userId);
 
             if (filePath == null || !System.IO.File.Exists(filePath))
@@ -88,12 +87,11 @@ namespace Nokey.Controllers
         }
     }
 
-    // DTO for creating or updating a profile
     public class ProfileCreateUpdateDto
     {
         public string Bio { get; set; }
-        public string Skills { get; set; } // Comma-separated skills
-        public IFormFile Resume { get; set; } // PDF file upload
-        public IFormFile ProfilePhoto { get; set; } // Image file upload
+        public string Skills { get; set; }
+        public IFormFile Resume { get; set; }
+        public IFormFile ProfilePhoto { get; set; }
     }
 }

@@ -20,52 +20,45 @@ namespace Nokey.Authentication
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure the Person-Profile relationship
             modelBuilder.Entity<Profile>()
-                .HasOne<Person>() // A Profile is associated with one Person
-                .WithMany()       // A Person can have many related entities (if needed, can be empty)
-                .HasForeignKey(p => p.PersonId) // Use PersonId as the foreign key
-                .OnDelete(DeleteBehavior.Cascade); // Delete Profile when Person is deleted
+                .HasOne<Person>() 
+                .WithMany()      
+                .HasForeignKey(p => p.PersonId) 
+                .OnDelete(DeleteBehavior.Cascade); 
 
-            // Ensure unique email for Person
             modelBuilder.Entity<Person>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            // Configure Company-Job relationship
             modelBuilder.Entity<Job>()
-                .HasOne<Company>() // Job belongs to a Company
-                .WithMany()        // A Company can have many Jobs
+                .HasOne<Company>() 
+                .WithMany()        
                 .HasForeignKey(j => j.CompanyId)
-                .OnDelete(DeleteBehavior.Cascade); // Cascade delete for Company-Job relationship
+                .OnDelete(DeleteBehavior.Cascade); 
 
-            // Configure Job's CreatedById relationship
             modelBuilder.Entity<Job>()
-                .HasOne<Person>() // Job is created by a Person
-                .WithMany()       // A Person can create many Jobs
+                .HasOne<Person>() 
+                .WithMany()       
                 .HasForeignKey(j => j.CreatedById)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete on Job's CreatedById
+                .OnDelete(DeleteBehavior.Restrict); 
 
-            // Configure Application-Job relationship
             modelBuilder.Entity<Application>()
-                .HasOne<Job>() // Application belongs to a Job
-                .WithMany()    // A Job can have many Applications
+                .HasOne<Job>() 
+                .WithMany()    
                 .HasForeignKey(a => a.JobId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete on Application's JobId
+                .OnDelete(DeleteBehavior.Restrict); 
 
-            // Configure Application-Applicant relationship
             modelBuilder.Entity<Application>()
-                .HasOne<Person>() // Application belongs to a Person (Applicant)
-                .WithMany()       // A Person can apply to many Jobs
+                .HasOne<Person>() 
+                .WithMany()       
                 .HasForeignKey(a => a.ApplicantId)
-                .OnDelete(DeleteBehavior.NoAction); // No cascading delete on Application's ApplicantId
+                .OnDelete(DeleteBehavior.NoAction); 
 
-            // Configure Skills property in Profile
             modelBuilder.Entity<Profile>()
                 .Property(p => p.Skills)
                 .HasConversion(
-                    v => string.Join(',', v), // Convert list to a comma-separated string
-                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() // Convert string back to list
+                    v => string.Join(',', v), 
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() 
                 );
         }
     }

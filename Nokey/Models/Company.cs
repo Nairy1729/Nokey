@@ -8,20 +8,20 @@ namespace Nokey.Models
     public class Company
     {
         [Key]
-        public int Id { get; set; } // Primary key for Company
+        public int Id { get; set; } 
 
         [Required]
         [StringLength(100)]
-        public string Name { get; set; } // Company name
+        public string Name { get; set; } 
 
-        public string Description { get; set; } // Company description
+        public string Description { get; set; } 
 
         [Url]
-        public string Website { get; set; } // Company website URL
+        public string Website { get; set; } 
 
-        public string Location { get; set; } // Company location
+        public string Location { get; set; } 
 
-        public string Logo { get; set; } // URL for the company logo
+        public string Logo { get; set; } 
 
         [Required]
         public string PersonId { get; set; }

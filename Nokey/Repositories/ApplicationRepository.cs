@@ -28,30 +28,19 @@ namespace Nokey.Repositories
 
         public async Task<IEnumerable<Application>> GetApplicationsByApplicantAsync(string userId)
         {
-            var applications = await _context.Applications
+            return await _context.Applications
                 .Where(a => a.ApplicantId == userId)
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
-
-            return applications;
         }
-
-
 
         public async Task<Application> GetApplicationByIdAsync(int applicationId)
         {
             return await _context.Applications.FindAsync(applicationId);
         }
 
-        //public async Task UpdateApplicationStatusAsync(Application application, string status)
-        //{
-        //    application.Status = status;
-        //    await _context.SaveChangesAsync();
-        //}
-
         public async Task UpdateApplicationStatusAsync(Application application, string status)
         {
-            // Convert the string `status` to the enum type `ApplicationStatus`
             if (Enum.TryParse<ApplicationStatus>(status, true, out var parsedStatus))
             {
                 application.Status = parsedStatus;
@@ -61,6 +50,35 @@ namespace Nokey.Repositories
             {
                 throw new ArgumentException($"Invalid status value: {status}");
             }
+        }
+
+        public async Task<IEnumerable<object>> GetApplicantsByJobAsync(int jobId)
+        {
+            return await _context.Applications
+                .Join(
+                    _context.Persons,
+                    application => application.ApplicantId,
+                    person => person.Id,
+                    (application, person) => new
+                    {
+                        ApplicationId = application.Id,
+                        JobId = application.JobId,
+                        ApplicantId = application.ApplicantId,
+                        ApplicantName = person.Fullname,
+                        Email = person.Email,
+                        PhoneNumber = person.PhoneNumber,
+                        Status = application.Status,
+                        CreatedAt = application.CreatedAt,
+                        UpdatedAt = application.UpdatedAt
+                    })
+                .Where(a => a.JobId == jobId)
+                .ToListAsync();
+        }
+
+        public async Task DeleteApplicationAsync(Application application)
+        {
+            _context.Applications.Remove(application);
+            await _context.SaveChangesAsync();
         }
     }
 }

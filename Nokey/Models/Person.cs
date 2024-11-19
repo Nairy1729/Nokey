@@ -10,7 +10,7 @@ namespace Nokey.Models
     public class Person
     {
         [Key, ForeignKey("ApplicationUser")]
-        public string Id { get; set; } // Primary key matching ApplicationUser ID
+        public string Id { get; set; } 
 
         [Required]
         public string UserName { get; set; }

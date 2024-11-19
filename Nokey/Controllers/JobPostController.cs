@@ -14,14 +14,11 @@ namespace Nokey.Controllers
         private readonly IJobPostRepository _jobRepository;
         private readonly ICompanyRepository _companyRepository;
 
-
         public JobPostController(ICompanyRepository companyRepository, IJobPostRepository jobRepository)
         {
             _companyRepository = companyRepository ?? throw new ArgumentNullException(nameof(companyRepository));
             _jobRepository = jobRepository ?? throw new ArgumentNullException(nameof(jobRepository));
         }
-
-
 
         [HttpPost("postJob")]
         public async Task<IActionResult> PostJob([FromBody] Job job)
@@ -31,29 +28,22 @@ namespace Nokey.Controllers
                 if (string.IsNullOrWhiteSpace(job.Title) || string.IsNullOrWhiteSpace(job.Description) ||
                     job.Salary <= 0 || job.CompanyId <= 0)
                 {
-                    return BadRequest(new { message = "Something is missing or incorrect.", success = false });
+                    return BadRequest(new { message = "Invalid job details provided.", success = false });
                 }
 
                 var userId = User.FindFirst("UserId")?.Value;
-
                 if (string.IsNullOrEmpty(userId))
                 {
-                    return Unauthorized(new { message = "User is not authenticated." });
+                    return Unauthorized(new { message = "User is not authenticated.", success = false });
                 }
 
                 var company = await _companyRepository.GetCompanyByIdAsync(job.CompanyId);
-
                 if (company == null || company.PersonId != userId)
                 {
-                    return BadRequest(new { message = "You can only post jobs for a company you have registered.", success = false });
+                    return BadRequest(new { message = "You can only post jobs for a company you own.", success = false });
                 }
 
                 job.CreatedById = userId;
-
-                if (job.Requirements == null || !job.Requirements.Any())
-                {
-                    job.Requirements = new List<string>();
-                }
 
                 if (!string.IsNullOrWhiteSpace(job.RequirementsString))
                 {
@@ -61,7 +51,6 @@ namespace Nokey.Controllers
                 }
 
                 var newJob = await _jobRepository.PostJobAsync(job);
-
                 return Created("", new { message = "New job created successfully.", job = newJob, success = true });
             }
             catch (Exception ex)
@@ -70,10 +59,6 @@ namespace Nokey.Controllers
             }
         }
 
-
-
-
-        // GET: api/Job
         [HttpGet("getAllJobs")]
         public async Task<IActionResult> GetAllJobs()
         {
@@ -87,8 +72,6 @@ namespace Nokey.Controllers
             return Ok(new { jobs, success = true });
         }
 
-
-        // GET: api/Job/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetJobById(int id)
         {
@@ -102,11 +85,15 @@ namespace Nokey.Controllers
             return Ok(new { job, success = true });
         }
 
-        // GET: api/Job/adminJobs
         [HttpGet("adminJobs")]
         public async Task<IActionResult> GetAdminJobs()
         {
-            string adminId = User.FindFirst("UserId")?.Value;
+            var adminId = User.FindFirst("UserId")?.Value;
+            if (string.IsNullOrWhiteSpace(adminId))
+            {
+                return Unauthorized(new { message = "User is not authenticated.", success = false });
+            }
+
             var jobs = await _jobRepository.GetAdminJobsAsync(adminId);
 
             if (jobs == null || !jobs.Any())
@@ -122,24 +109,30 @@ namespace Nokey.Controllers
         {
             try
             {
-                string userId = User.FindFirst("UserId")?.Value;
-
+                var userId = User.FindFirst("UserId")?.Value;
                 if (string.IsNullOrWhiteSpace(userId))
+                {
                     return Unauthorized(new { message = "User is not authenticated.", success = false });
+                }
 
                 var existingJob = await _jobRepository.GetJobByIdAsync(id);
-
                 if (existingJob == null)
+                {
                     return NotFound(new { message = "Job not found.", success = false });
+                }
 
                 if (existingJob.CreatedById != userId)
+                {
                     return StatusCode(403, new { message = "You are not authorized to update this job.", success = false });
+                }
 
                 job.Id = id;
                 var updatedJob = await _jobRepository.UpdateJobAsync(job);
 
                 if (updatedJob == null)
+                {
                     return BadRequest(new { message = "Failed to update the job.", success = false });
+                }
 
                 return Ok(new { message = "Job updated successfully.", job = updatedJob, success = true });
             }
@@ -154,23 +147,28 @@ namespace Nokey.Controllers
         {
             try
             {
-                string userId = User.FindFirst("UserId")?.Value;
-
+                var userId = User.FindFirst("UserId")?.Value;
                 if (string.IsNullOrWhiteSpace(userId))
+                {
                     return Unauthorized(new { message = "User is not authenticated.", success = false });
+                }
 
                 var existingJob = await _jobRepository.GetJobByIdAsync(id);
-
                 if (existingJob == null)
+                {
                     return NotFound(new { message = "Job not found.", success = false });
+                }
 
                 if (existingJob.CreatedById != userId)
+                {
                     return StatusCode(403, new { message = "You are not authorized to delete this job.", success = false });
+                }
 
                 var isDeleted = await _jobRepository.DeleteJobAsync(id);
-
                 if (!isDeleted)
+                {
                     return BadRequest(new { message = "Failed to delete the job.", success = false });
+                }
 
                 return Ok(new { message = "Job deleted successfully.", success = true });
             }
@@ -179,14 +177,5 @@ namespace Nokey.Controllers
                 return BadRequest(new { message = ex.Message, success = false });
             }
         }
-
-
-
-
-
-
-
-
-
     }
 }

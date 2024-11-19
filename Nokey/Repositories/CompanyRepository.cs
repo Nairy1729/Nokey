@@ -1,14 +1,10 @@
-﻿// CompanyRepository.cs
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Nokey.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using Nokey.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using static Nokey.Controllers.AuthenticationController;
 
 namespace Nokey.Repositories
 {
@@ -31,24 +27,17 @@ namespace Nokey.Repositories
             company.PersonId = personId;
 
             _context.Companies.Add(company);
-
             await _context.SaveChangesAsync();
 
             return company;
         }
 
-
-
-
         public async Task<IEnumerable<Company>> GetCompaniesByUserIdAsync(string userId)
         {
-            return await _context.Companies.Where(c => c.PersonId == userId).ToListAsync();
+            return await _context.Companies
+                                 .Where(c => c.PersonId == userId)
+                                 .ToListAsync();
         }
-
-        //public async Task<Company> GetCompanyByIdAsync(int companyId)
-        //{
-        //    return await _context.Companies.FindAsync(companyId);
-        //}
 
         public async Task<Company> UpdateCompanyAsync(int companyId, Company updatedCompany)
         {
@@ -68,7 +57,8 @@ namespace Nokey.Repositories
 
         public async Task<bool> CompanyExistsAsync(string companyName)
         {
-            return await _context.Companies.AnyAsync(c => c.Name == companyName);
+            return await _context.Companies
+                                 .AnyAsync(c => c.Name == companyName);
         }
 
         public async Task<Company> GetCompanyByIdAsync(int companyId)
@@ -77,6 +67,5 @@ namespace Nokey.Repositories
                                  .Where(c => c.Id == companyId)
                                  .FirstOrDefaultAsync();
         }
-
     }
 }

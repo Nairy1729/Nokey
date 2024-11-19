@@ -19,23 +19,19 @@ namespace Nokey.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Foreign Key to Company
         public int CompanyId { get; set; }
 
-        // Foreign Key to Person (CreatedBy)
         [Required]
         public string CreatedById { get; set; }
 
-        // Instead of JobRequirement, storing multiple strings
         [NotMapped]
         public List<string> Requirements { get; set; } = new List<string>();
 
-        // Store Requirements as a single comma-separated string in the database
         [Column("Requirements")]
         public string RequirementsString
         {
-            get => string.Join(",", Requirements);  // Convert List<string> to a comma-separated string
-            set => Requirements = value?.Split(',')?.ToList();  // Convert the comma-separated string back to a List<string>
+            get => string.Join(",", Requirements);  
+            set => Requirements = value?.Split(',')?.ToList();  
         }
     }
 }

@@ -1,9 +1,4 @@
-﻿// JobRepository.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Nokey.Authentication;
 using Nokey.Models;
 
@@ -27,17 +22,10 @@ namespace Nokey.Repositories
 
         public async Task<IEnumerable<Job>> GetAllJobsAsync()
         {
-            // If keyword is null or empty, return all jobs
-
             return await _context.Jobs
                 .OrderByDescending(j => j.CreatedAt)
-                  .ToListAsync();
-
-
-
+                .ToListAsync();
         }
-
-
 
         public async Task<Job> GetJobByIdAsync(int jobId)
         {
@@ -51,13 +39,10 @@ namespace Nokey.Repositories
                     Salary = j.Salary,
                     CreatedAt = j.CreatedAt,
                     CompanyId = j.CompanyId,
-                    CreatedById = j.CreatedById,
-                    // Manually include applications by joining with the Applications table using the JobId foreign key
-                    // Get all related applications
+                    CreatedById = j.CreatedById
                 })
                 .FirstOrDefaultAsync();
         }
-
 
         public async Task<IEnumerable<Job>> GetAdminJobsAsync(string adminId)
         {
@@ -70,11 +55,9 @@ namespace Nokey.Repositories
         public async Task<Job> UpdateJobAsync(Job job)
         {
             var existingJob = await _context.Jobs.FindAsync(job.Id);
-
             if (existingJob == null)
                 return null;
 
-            // Update only the provided fields
             existingJob.Title = string.IsNullOrWhiteSpace(job.Title) ? existingJob.Title : job.Title;
             existingJob.Description = string.IsNullOrWhiteSpace(job.Description) ? existingJob.Description : job.Description;
             existingJob.Salary = job.Salary > 0 ? job.Salary : existingJob.Salary;
@@ -88,7 +71,6 @@ namespace Nokey.Repositories
         public async Task<bool> DeleteJobAsync(int jobId)
         {
             var job = await _context.Jobs.FindAsync(jobId);
-
             if (job == null)
                 return false;
 
@@ -97,7 +79,5 @@ namespace Nokey.Repositories
 
             return true;
         }
-
-
     }
 }

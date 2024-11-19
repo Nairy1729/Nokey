@@ -32,11 +32,9 @@ namespace Nokey.Repositories
                 _dbContext.Profiles.Add(existingProfile);
             }
 
-            // Update fields
             existingProfile.Bio = profile.Bio;
             existingProfile.Skills = profile.Skills;
 
-            // Handle resume upload
             if (resume != null)
             {
                 if (Path.GetExtension(resume.FileName).ToLower() != ".pdf")
@@ -48,13 +46,12 @@ namespace Nokey.Repositories
                 existingProfile.ResumeFileName = resume.FileName;
             }
 
-            // Handle profile photo upload
             if (profilePhoto != null)
             {
                 var fileName = $"{Guid.NewGuid()}{Path.GetExtension(profilePhoto.FileName)}";
                 var filePath = Path.Combine("Uploads/ProfilePhotos", fileName);
 
-                Directory.CreateDirectory("Uploads/ProfilePhotos"); // Ensure directory exists
+                Directory.CreateDirectory("Uploads/ProfilePhotos");
                 using var stream = new FileStream(filePath, FileMode.Create);
                 await profilePhoto.CopyToAsync(stream);
 

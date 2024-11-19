@@ -4,7 +4,6 @@ using Nokey.Models;
 using Nokey.Repositories;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Nokey.Controllers
 {
@@ -32,7 +31,6 @@ namespace Nokey.Controllers
                 }
 
                 var result = await _companyRepository.RegisterCompanyAsync(company, personId);
-
                 return CreatedAtAction(nameof(GetCompanyById), new { id = result.Id }, result);
             }
             catch (UnauthorizedAccessException ex)
@@ -44,8 +42,6 @@ namespace Nokey.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> GetCompanies()
@@ -116,13 +112,12 @@ namespace Nokey.Controllers
                 throw new UnauthorizedAccessException("User ID is not available in token claims.");
             }
 
-            return userIdClaim; // Return as string (no need to parse it as int)
+            return userIdClaim;
         }
-
 
         private async Task<string> UploadLogoToCloudinary(IFormFile file)
         {
-            return "logo-url"; // Placeholder for actual Cloudinary URL
+            return "logo-url";
         }
     }
 }
