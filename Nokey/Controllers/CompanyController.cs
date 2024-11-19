@@ -4,6 +4,7 @@ using Nokey.Models;
 using Nokey.Repositories;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using System.IO;
 
 namespace Nokey.Controllers
 {
@@ -87,10 +88,13 @@ namespace Nokey.Controllers
                 return BadRequest(new { message = "Updated company details are required.", success = false });
             }
 
-            if (logoFile != null)
+            if (logoFile != null && logoFile.Length > 0)
             {
-                var logoUri = await UploadLogoToCloudinary(logoFile);
-                updatedCompany.Logo = logoUri;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await logoFile.CopyToAsync(memoryStream);
+                    updatedCompany.Logo = memoryStream.ToArray(); 
+                }
             }
 
             var updated = await _companyRepository.UpdateCompanyAsync(id, updatedCompany);
@@ -101,23 +105,6 @@ namespace Nokey.Controllers
             }
 
             return Ok(new { message = "Company information updated.", success = true });
-        }
-
-        private string GetUserId()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userIdClaim))
-            {
-                throw new UnauthorizedAccessException("User ID is not available in token claims.");
-            }
-
-            return userIdClaim;
-        }
-
-        private async Task<string> UploadLogoToCloudinary(IFormFile file)
-        {
-            return "logo-url";
         }
     }
 }

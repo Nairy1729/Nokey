@@ -49,7 +49,12 @@ namespace Nokey.Repositories
             company.Description = updatedCompany.Description;
             company.Website = updatedCompany.Website;
             company.Location = updatedCompany.Location;
-            company.Logo = updatedCompany.Logo;
+
+            // Handle the logo image as a byte array (VARBINARY in SQL)
+            if (updatedCompany.Logo != null && updatedCompany.Logo.Length > 0)
+            {
+                company.Logo = updatedCompany.Logo;  // Store the logo as a byte array
+            }
 
             await _context.SaveChangesAsync();
             return company;

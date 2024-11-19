@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,9 +18,9 @@ namespace Nokey.Models
         [Url]
         public string Website { get; set; } 
 
-        public string Location { get; set; } 
+        public string Location { get; set; }
 
-        public string Logo { get; set; } 
+        public byte[] Logo { get; set; }
 
         [Required]
         public string PersonId { get; set; }

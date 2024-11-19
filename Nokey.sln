@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nokey", "Nokey\Nokey.csproj", "{836209EF-F26F-4B5B-A54D-C492D0360836}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareerCrafter", "Nokey\CareerCrafter.csproj", "{836209EF-F26F-4B5B-A54D-C492D0360836}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

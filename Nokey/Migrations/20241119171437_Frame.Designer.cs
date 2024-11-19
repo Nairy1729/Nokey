@@ -12,8 +12,8 @@ using Nokey.Authentication;
 namespace Nokey.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241118112649_HJKH")]
-    partial class HJKH
+    [Migration("20241119171437_Frame")]
+    partial class Frame
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -274,9 +274,9 @@ namespace Nokey.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Logo")
+                    b.Property<byte[]>("Logo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
