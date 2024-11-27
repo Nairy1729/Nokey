@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CareerCrafter.Authentication;
+using CareerCrafter.Models;
 using Microsoft.EntityFrameworkCore;
-using Nokey.Authentication;
-using Nokey.Models;
 
-namespace Nokey.Repositories
+namespace CareerCrafter.Repositories
 {
     public class JobRepository : IJobRepository
     {

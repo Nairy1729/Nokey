@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Nokey;
 
-namespace Nokey.Controllers
+namespace CareerCrafter.Controllers
 {
     [ApiController]
     [Route("[controller]")]

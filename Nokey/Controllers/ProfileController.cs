@@ -1,15 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CareerCrafter.Models;
+using CareerCrafter.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Nokey.Models;
-using Nokey.Repositories;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Nokey.Controllers
+namespace CareerCrafter.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableCors("AllowSpecificOrigin")]
     [Authorize]
     public class ProfileController : ControllerBase
     {

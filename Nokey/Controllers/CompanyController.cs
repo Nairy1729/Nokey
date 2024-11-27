@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Nokey.Models;
-using Nokey.Repositories;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.IO;
+using CareerCrafter.Repositories;
+using CareerCrafter.Models;
+using Microsoft.AspNetCore.Cors;
 
-namespace Nokey.Controllers
+namespace CareerCrafter.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableCors("AllowSpecificOrigin")]
     public class CompanyController : ControllerBase
     {
         private readonly ICompanyRepository _companyRepository;
@@ -116,7 +118,7 @@ namespace Nokey.Controllers
                 using (var memoryStream = new MemoryStream())
                 {
                     await logoFile.CopyToAsync(memoryStream);
-                    updatedCompany.Logo = memoryStream.ToArray(); 
+                    updatedCompany.Logo = memoryStream.ToArray();
                 }
             }
 

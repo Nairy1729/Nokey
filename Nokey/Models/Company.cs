@@ -1,22 +1,21 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Nokey.Models
+namespace CareerCrafter.Models
 {
     public class Company
     {
         [Key]
-        public int Id { get; set; } 
+        public int Id { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string Name { get; set; } 
+        public string Name { get; set; }
 
-        public string Description { get; set; } 
+        public string Description { get; set; }
 
         [Url]
-        public string Website { get; set; } 
+        public string Website { get; set; }
 
         public string Location { get; set; }
 

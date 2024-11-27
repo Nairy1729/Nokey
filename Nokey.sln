@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareerCrafter", "Nokey\CareerCrafter.csproj", "{836209EF-F26F-4B5B-A54D-C492D0360836}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerCrafterTests", "CareerCrafterTests\CareerCrafterTests.csproj", "{1936D527-1BAA-457B-B6B3-FE156448415E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{836209EF-F26F-4B5B-A54D-C492D0360836}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{836209EF-F26F-4B5B-A54D-C492D0360836}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{836209EF-F26F-4B5B-A54D-C492D0360836}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1936D527-1BAA-457B-B6B3-FE156448415E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1936D527-1BAA-457B-B6B3-FE156448415E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1936D527-1BAA-457B-B6B3-FE156448415E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1936D527-1BAA-457B-B6B3-FE156448415E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

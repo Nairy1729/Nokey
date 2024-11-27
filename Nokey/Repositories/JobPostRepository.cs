@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Nokey.Authentication;
-using Nokey.Models;
+﻿using CareerCrafter.Authentication;
+using CareerCrafter.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace Nokey.Repositories
+namespace CareerCrafter.Repositories
 {
     public class JobPostRepository : IJobPostRepository
     {

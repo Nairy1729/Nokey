@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Nokey.Authentication;
-using Nokey.Models;
+﻿using CareerCrafter.Authentication;
+using CareerCrafter.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Nokey.Repositories
+namespace CareerCrafter.Repositories
 {
     public class ProfileRepository : IProfileRepository
     {

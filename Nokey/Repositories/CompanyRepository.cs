@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Nokey.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
-using Nokey.Authentication;
+using CareerCrafter.Models;
+using CareerCrafter.Authentication;
 
-namespace Nokey.Repositories
+namespace CareerCrafter.Repositories
 {
     public class CompanyRepository : ICompanyRepository
     {

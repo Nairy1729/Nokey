@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Nokey.Authentication
+namespace CareerCrafter.Authentication
 {
     public class ApplicationUser : IdentityUser
     {

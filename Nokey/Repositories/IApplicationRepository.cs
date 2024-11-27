@@ -1,8 +1,8 @@
-﻿using Nokey.Models;
+﻿using CareerCrafter.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Nokey.Repositories
+namespace CareerCrafter.Repositories
 {
     public interface IApplicationRepository
     {

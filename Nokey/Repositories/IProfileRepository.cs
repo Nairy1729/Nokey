@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Nokey.Models;
+﻿using CareerCrafter.Models;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Nokey.Repositories
+namespace CareerCrafter.Repositories
 {
     public interface IProfileRepository
     {

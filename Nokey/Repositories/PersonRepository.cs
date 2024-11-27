@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Nokey.Authentication;
-using Nokey.Models;
+﻿using CareerCrafter.Authentication;
+using CareerCrafter.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Nokey.Repositories
+namespace CareerCrafter.Repositories
 {
     public class PersonRepository : IPersonRepository
     {

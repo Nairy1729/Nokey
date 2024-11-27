@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Nokey.Models;
-using Nokey.Authentication;
-using Nokey.Repositories;
 using System;
 using System.Threading.Tasks;
+using CareerCrafter.Repositories;
+using CareerCrafter.Models;
+using CareerCrafter.Authentication;
+using Microsoft.AspNetCore.Cors;
 
-namespace Nokey.Controllers
+namespace CareerCrafter.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableCors("AllowSpecificOrigin")]
     public class PersonController : ControllerBase
     {
         private readonly IPersonRepository _personRepository;

@@ -1,4 +1,4 @@
-﻿namespace Nokey.Repositories
+﻿namespace CareerCrafter.Repositories
 {
     public interface IAuthenticationService
     {

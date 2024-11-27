@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nokey.Models
+namespace CareerCrafter.Models
 {
     public class Profile
     {

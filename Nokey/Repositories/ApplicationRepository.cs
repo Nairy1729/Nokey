@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Nokey.Authentication;
-using Nokey.Models;
+﻿using CareerCrafter.Authentication;
+using CareerCrafter.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace Nokey.Repositories
+namespace CareerCrafter.Repositories
 {
     public class ApplicationRepository : IApplicationRepository
     {
@@ -62,14 +62,14 @@ namespace Nokey.Repositories
                     (application, person) => new
                     {
                         ApplicationId = application.Id,
-                        JobId = application.JobId,
-                        ApplicantId = application.ApplicantId,
+                        application.JobId,
+                        application.ApplicantId,
                         ApplicantName = person.Fullname,
-                        Email = person.Email,
-                        PhoneNumber = person.PhoneNumber,
-                        Status = application.Status,
-                        CreatedAt = application.CreatedAt,
-                        UpdatedAt = application.UpdatedAt
+                        person.Email,
+                        person.PhoneNumber,
+                        application.Status,
+                        application.CreatedAt,
+                        application.UpdatedAt
                     })
                 .Where(a => a.JobId == jobId)
                 .ToListAsync();

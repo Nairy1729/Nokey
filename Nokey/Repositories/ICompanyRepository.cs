@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Nokey.Models;
+using CareerCrafter.Models;
 
-namespace Nokey.Repositories
+namespace CareerCrafter.Repositories
 {
     public interface ICompanyRepository
     {

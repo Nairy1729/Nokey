@@ -1,13 +1,13 @@
+using CareerCrafter.Authentication;
+using CareerCrafter.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Nokey.Authentication;
-using Nokey.Repositories;
 using System.Text;
 
-namespace Nokey
+namespace CareerCrafter
 {
     public class Program
     {
@@ -52,12 +52,24 @@ namespace Nokey
             builder.Services.AddScoped<IPersonRepository, PersonRepository>();
             builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
             builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
-            builder.Services.AddScoped<IJobPostRepository, JobPostRepository>(); // Fixed typo here
+            builder.Services.AddScoped<IJobPostRepository, JobPostRepository>();
             builder.Services.AddScoped<IJobRepository, JobRepository>();
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 
-
+            // Add Controllers
             builder.Services.AddControllers();
+
+            // Add CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000") // Replace with your frontend URL
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
 
             // Configure Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
@@ -99,6 +111,10 @@ namespace Nokey
             }
 
             app.UseHttpsRedirection();
+
+            // Use CORS Middleware
+            app.UseCors("AllowSpecificOrigin");
+
             app.UseAuthentication();
             app.UseAuthorization();
 

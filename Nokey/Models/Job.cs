@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Nokey.Models
+namespace CareerCrafter.Models
 {
     public class Job
     {
@@ -30,8 +30,8 @@ namespace Nokey.Models
         [Column("Requirements")]
         public string RequirementsString
         {
-            get => string.Join(",", Requirements);  
-            set => Requirements = value?.Split(',')?.ToList();  
+            get => string.Join(",", Requirements);
+            set => Requirements = value?.Split(',')?.ToList();
         }
     }
 }

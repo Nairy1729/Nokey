@@ -1,4 +1,4 @@
-﻿namespace Nokey.Authentication
+﻿namespace CareerCrafter.Authentication
 {
     public static class UserRoles
     {
