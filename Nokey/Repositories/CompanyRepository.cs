@@ -45,20 +45,24 @@ namespace CareerCrafter.Repositories
             if (company == null)
                 return null;
 
+            // Update basic properties
             company.Name = updatedCompany.Name;
             company.Description = updatedCompany.Description;
             company.Website = updatedCompany.Website;
             company.Location = updatedCompany.Location;
 
-            // Handle the logo image as a byte array (VARBINARY in SQL)
-            if (updatedCompany.Logo != null && updatedCompany.Logo.Length > 0)
+            // Update the logo URL if provided
+            if (!string.IsNullOrWhiteSpace(updatedCompany.LogoUrl))
             {
-                company.Logo = updatedCompany.Logo;  // Store the logo as a byte array
+                company.LogoUrl = updatedCompany.LogoUrl; // Use the LogoUrl field
             }
+
+            company.UpdatedAt = DateTime.UtcNow; // Update the timestamp
 
             await _context.SaveChangesAsync();
             return company;
         }
+
 
         public async Task<bool> CompanyExistsAsync(string companyName)
         {

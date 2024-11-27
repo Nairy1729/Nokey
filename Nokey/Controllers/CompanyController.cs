@@ -22,29 +22,18 @@ namespace CareerCrafter.Controllers
         }
 
         [HttpPost("register-company")]
-        public async Task<IActionResult> RegisterCompany([FromForm] Company company, IFormFile logoFile)
+        public async Task<IActionResult> RegisterCompany([FromBody] Company company)
         {
             try
             {
-                if (logoFile == null || logoFile.Length == 0)
+                if (string.IsNullOrWhiteSpace(company.LogoUrl))
                 {
-                    return BadRequest(new { message = "Logo file is required.", success = false });
+                    return BadRequest(new { message = "Logo URL is required.", success = false });
                 }
 
-                if (logoFile.ContentType != "image/jpeg" && logoFile.ContentType != "image/jpg")
+                if (!Uri.IsWellFormedUriString(company.LogoUrl, UriKind.Absolute))
                 {
-                    return BadRequest(new { message = "Only JPG or JPEG file formats are allowed for the logo.", success = false });
-                }
-
-                if (logoFile.Length > 2 * 1024 * 1024) // 2MB limit
-                {
-                    return BadRequest(new { message = "Logo file size must be less than 2MB.", success = false });
-                }
-
-                using (var memoryStream = new MemoryStream())
-                {
-                    await logoFile.CopyToAsync(memoryStream);
-                    company.Logo = memoryStream.ToArray(); // Store the logo as a byte array
+                    return BadRequest(new { message = "Invalid Logo URL format.", success = false });
                 }
 
                 var personId = User.FindFirst("UserId")?.Value;
@@ -53,6 +42,9 @@ namespace CareerCrafter.Controllers
                 {
                     return Unauthorized(new { message = "User is not authenticated." });
                 }
+
+                // Assign the authenticated user's ID to the company
+                company.PersonId = personId;
 
                 // Register the company
                 var result = await _companyRepository.RegisterCompanyAsync(company, personId);
@@ -67,6 +59,7 @@ namespace CareerCrafter.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
 
 
         [HttpGet]
@@ -106,30 +99,37 @@ namespace CareerCrafter.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateCompany(int id, [FromForm] Company updatedCompany, IFormFile logoFile)
+        public async Task<IActionResult> UpdateCompany(int id, [FromBody] Company updatedCompany)
         {
             if (updatedCompany == null)
             {
                 return BadRequest(new { message = "Updated company details are required.", success = false });
             }
 
-            if (logoFile != null && logoFile.Length > 0)
+            // Validate the LogoUrl if provided
+            if (!string.IsNullOrWhiteSpace(updatedCompany.LogoUrl) &&
+                !Uri.IsWellFormedUriString(updatedCompany.LogoUrl, UriKind.Absolute))
             {
-                using (var memoryStream = new MemoryStream())
+                return BadRequest(new { message = "Invalid Logo URL format.", success = false });
+            }
+
+            try
+            {
+                // Update the company using the repository
+                var updated = await _companyRepository.UpdateCompanyAsync(id, updatedCompany);
+
+                if (updated == null)
                 {
-                    await logoFile.CopyToAsync(memoryStream);
-                    updatedCompany.Logo = memoryStream.ToArray();
+                    return NotFound(new { message = "Company not found.", success = false });
                 }
+
+                return Ok(new { message = "Company information updated.", success = true });
             }
-
-            var updated = await _companyRepository.UpdateCompanyAsync(id, updatedCompany);
-
-            if (updated == null)
+            catch (Exception ex)
             {
-                return NotFound(new { message = "Company not found.", success = false });
+                return BadRequest(new { message = ex.Message, success = false });
             }
-
-            return Ok(new { message = "Company information updated.", success = true });
         }
+
     }
 }

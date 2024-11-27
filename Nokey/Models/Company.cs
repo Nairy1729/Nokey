@@ -19,14 +19,13 @@ namespace CareerCrafter.Models
 
         public string Location { get; set; }
 
-        public byte[] Logo { get; set; }
+        [Url]
+        public string LogoUrl { get; set; } // Updated to store URL instead of byte[]
 
         [Required]
         public string PersonId { get; set; }
 
         [ForeignKey("PersonId")]
-
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
