@@ -7,6 +7,7 @@ using CareerCrafter.Repositories;
 using CareerCrafter.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.EntityFrameworkCore;
+using CareerCrafter.Services;
 
 namespace CareerCrafter.Controllers
 {
@@ -19,9 +20,11 @@ namespace CareerCrafter.Controllers
         private readonly IJobRepository _jobRepository;
         private readonly IProfileRepository _profileRepository;
         private readonly ILogger<JobsController> _logger;
+        private readonly IPersonRepository _personRepository;
 
-        public JobsController(IApplicationRepository applicationRepository, IJobRepository jobRepository, IProfileRepository profileRepository, ILogger<JobsController> logger)
+        public JobsController(IApplicationRepository applicationRepository, IJobRepository jobRepository, IPersonRepository personRepository,IProfileRepository profileRepository, ILogger<JobsController> logger)
         {
+            _personRepository = personRepository;
             _applicationRepository = applicationRepository;
             _profileRepository = profileRepository;
             _jobRepository = jobRepository;
@@ -171,6 +174,38 @@ namespace CareerCrafter.Controllers
         //    }
         //}
 
+        //[HttpPatch("update-status")]
+        //public async Task<IActionResult> UpdateStatus([FromQuery] string applicantId, [FromQuery] int jobId, [FromBody] string status)
+        //{
+        //    if (string.IsNullOrWhiteSpace(status))
+        //    {
+        //        return BadRequest(new { message = "Status is required.", success = false });
+        //    }
+
+        //    try
+        //    {
+        //        var application = await _applicationRepository.GetApplicationAsync(applicantId, jobId);
+        //        if (application == null)
+        //        {
+        //            return NotFound(new { message = "Application not found.", success = false });
+        //        }
+
+        //        await _applicationRepository.UpdateApplicationStatusAsync(application, status);
+
+        //        return Ok(new { message = "Status updated successfully.", success = true });
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        _logger.LogWarning(ex, "Invalid status provided.");
+        //        return BadRequest(new { message = ex.Message, success = false });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error updating application status.");
+        //        return StatusCode(500, new { message = "An error occurred while updating status.", success = false });
+        //    }
+        //}
+
         [HttpPatch("update-status")]
         public async Task<IActionResult> UpdateStatus([FromQuery] string applicantId, [FromQuery] int jobId, [FromBody] string status)
         {
@@ -181,15 +216,33 @@ namespace CareerCrafter.Controllers
 
             try
             {
+                // Validate status
+                if (!Enum.TryParse<ApplicationStatus>(status, true, out var parsedStatus))
+                {
+                    throw new ArgumentException("Invalid status provided. Valid statuses are Pending, Accepted, or Rejected.");
+                }
+
+                // Fetch the application
                 var application = await _applicationRepository.GetApplicationAsync(applicantId, jobId);
                 if (application == null)
                 {
                     return NotFound(new { message = "Application not found.", success = false });
                 }
 
-                await _applicationRepository.UpdateApplicationStatusAsync(application, status);
+                // Update the application status
+                await _applicationRepository.UpdateApplicationStatusAsync(application, parsedStatus.ToString());
 
-                return Ok(new { message = "Status updated successfully.", success = true });
+                // Fetch applicant details for email
+                var applicant = await _personRepository.GetPersonByIdAsync(applicantId);
+                if (applicant != null)
+                {
+                    var emailService = HttpContext.RequestServices.GetRequiredService<EmailService>();
+                    var subject = "Application Status Update";
+                    var message = $"Dear {applicant.Fullname},<br>Your application status for Job ID {jobId} has been updated to: <strong>{parsedStatus}</strong>.<br>Thank you.";
+                    await emailService.SendEmailAsync(applicant.Email, subject, message);
+                }
+
+                return Ok(new { message = "Status updated successfully and notification sent.", success = true });
             }
             catch (ArgumentException ex)
             {
@@ -202,6 +255,7 @@ namespace CareerCrafter.Controllers
                 return StatusCode(500, new { message = "An error occurred while updating status.", success = false });
             }
         }
+
 
         [HttpGet("search")]
         public async Task<IActionResult> SearchJobs(string query)

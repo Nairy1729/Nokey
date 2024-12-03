@@ -1,5 +1,6 @@
 using CareerCrafter.Authentication;
 using CareerCrafter.Repositories;
+using CareerCrafter.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,8 @@ namespace CareerCrafter
             builder.Services.AddScoped<IJobPostRepository, JobPostRepository>();
             builder.Services.AddScoped<IJobRepository, JobRepository>();
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+            builder.Services.AddScoped<EmailService>();
+
 
             // Add Controllers
             builder.Services.AddControllers();
