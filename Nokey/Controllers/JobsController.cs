@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using CareerCrafter.Repositories;
 using CareerCrafter.Models;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.EntityFrameworkCore;
 
 namespace CareerCrafter.Controllers
 {
@@ -16,11 +17,13 @@ namespace CareerCrafter.Controllers
     {
         private readonly IApplicationRepository _applicationRepository;
         private readonly IJobRepository _jobRepository;
+        private readonly IProfileRepository _profileRepository;
         private readonly ILogger<JobsController> _logger;
 
-        public JobsController(IApplicationRepository applicationRepository, IJobRepository jobRepository, ILogger<JobsController> logger)
+        public JobsController(IApplicationRepository applicationRepository, IJobRepository jobRepository, IProfileRepository profileRepository, ILogger<JobsController> logger)
         {
             _applicationRepository = applicationRepository;
+            _profileRepository = profileRepository;
             _jobRepository = jobRepository;
             _logger = logger;
         }
@@ -129,30 +132,74 @@ namespace CareerCrafter.Controllers
             }
         }
 
-        [HttpPatch("application/{id}/status")]
-        public async Task<IActionResult> UpdateStatus(int id, [FromBody] string status)
+        [HttpGet("applicant/{userId}/resume")]
+        public IActionResult DownloadResume(string userId)
         {
-            if (string.IsNullOrEmpty(status))
+            //var userId = User.FindFirst("UserId")?.Value;
+            var resume = _profileRepository.GetResume(userId);
+
+            if (resume == null)
+                return NotFound("Resume not found.");
+
+            return File(resume, "application/pdf", "Resume.pdf");
+        }
+
+        //[HttpPatch("application/{id}/status")]
+        //public async Task<IActionResult> UpdateStatus(int id, [FromBody] string status)
+        //{
+        //    if (string.IsNullOrEmpty(status))
+        //    {
+        //        return BadRequest(new { message = "Status is required.", success = false });
+        //    }
+
+        //    try
+        //    {
+        //        var application = await _applicationRepository.GetApplicationByIdAsync(id);
+        //        if (application == null)
+        //        {
+        //            return NotFound(new { message = "Application not found.", success = false });
+        //        }
+
+        //        await _applicationRepository.UpdateApplicationStatusAsync(application, status.ToLower());
+
+        //        return Ok(new { message = "Status updated successfully.", success = true });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error updating application status.");
+        //        return StatusCode(500, new { message = "An error occurred.", success = false });
+        //    }
+        //}
+
+        [HttpPatch("update-status")]
+        public async Task<IActionResult> UpdateStatus([FromQuery] string applicantId, [FromQuery] int jobId, [FromBody] string status)
+        {
+            if (string.IsNullOrWhiteSpace(status))
             {
                 return BadRequest(new { message = "Status is required.", success = false });
             }
 
             try
             {
-                var application = await _applicationRepository.GetApplicationByIdAsync(id);
+                var application = await _applicationRepository.GetApplicationAsync(applicantId, jobId);
                 if (application == null)
                 {
                     return NotFound(new { message = "Application not found.", success = false });
                 }
 
-                await _applicationRepository.UpdateApplicationStatusAsync(application, status.ToLower());
+                await _applicationRepository.UpdateApplicationStatusAsync(application, status);
 
                 return Ok(new { message = "Status updated successfully.", success = true });
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning(ex, "Invalid status provided.");
+                return BadRequest(new { message = ex.Message, success = false });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating application status.");
-                return StatusCode(500, new { message = "An error occurred.", success = false });
+                return StatusCode(500, new { message = "An error occurred while updating status.", success = false });
             }
         }
 
