@@ -15,7 +15,6 @@ namespace CareerCrafter.Authentication
         public DbSet<Company> Companies { get; set; }
         public DbSet<Application> Applications { get; set; }
         public DbSet<Profile> Profiles { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
