@@ -44,7 +44,7 @@ namespace CareerCrafter.Controllers
             var emailService = HttpContext.RequestServices.GetRequiredService<EmailService>();
            
             var subject = "Reset Password";
-            var message = $"Dear User,<br>Your Password {token}  reset link is {resetLink}</strong>.<br>Thank you.";
+            var message = $"{person.Fullname},<br>Your password reset link is {resetLink} and Password reset token is {token}</strong>.<br>Thank you.";
             await emailService.SendEmailAsync(model.Email, subject, message);
 
             return Ok("A password reset link has been sent to your email.");
