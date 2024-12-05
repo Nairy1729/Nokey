@@ -20,7 +20,7 @@ namespace CareerCrafter.Models
         public string Location { get; set; }
 
         [Url]
-        public string LogoUrl { get; set; } // Updated to store URL instead of byte[]
+        public string LogoUrl { get; set; } 
 
         [Required]
         public string PersonId { get; set; }

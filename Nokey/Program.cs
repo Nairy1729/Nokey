@@ -16,16 +16,16 @@ namespace CareerCrafter
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // For Identity
+            
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            // Adding Authentication
+            
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -46,10 +46,9 @@ namespace CareerCrafter
                 };
             });
 
-            builder.Services.AddHttpContextAccessor(); // This is required for IHttpContextAccessor
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
-            // Register Repositories
             builder.Services.AddScoped<IPersonRepository, PersonRepository>();
             builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
             builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
@@ -59,22 +58,19 @@ namespace CareerCrafter
             builder.Services.AddScoped<EmailService>();
 
 
-            // Add Controllers
             builder.Services.AddControllers();
 
-            // Add CORS
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigin", policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000") // Replace with your frontend URL
+                    policy.WithOrigins("http://localhost:3000") 
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
                 });
             });
 
-            // Configure Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -106,7 +102,6 @@ namespace CareerCrafter
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -115,7 +110,6 @@ namespace CareerCrafter
 
             app.UseHttpsRedirection();
 
-            // Use CORS Middleware
             app.UseCors("AllowSpecificOrigin");
 
             app.UseAuthentication();

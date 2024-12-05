@@ -45,19 +45,17 @@ namespace CareerCrafter.Repositories
             if (company == null)
                 return null;
 
-            // Update basic properties
             company.Name = updatedCompany.Name;
             company.Description = updatedCompany.Description;
             company.Website = updatedCompany.Website;
             company.Location = updatedCompany.Location;
 
-            // Update the logo URL if provided
             if (!string.IsNullOrWhiteSpace(updatedCompany.LogoUrl))
             {
-                company.LogoUrl = updatedCompany.LogoUrl; // Use the LogoUrl field
+                company.LogoUrl = updatedCompany.LogoUrl; 
             }
 
-            company.UpdatedAt = DateTime.UtcNow; // Update the timestamp
+            company.UpdatedAt = DateTime.UtcNow; 
 
             await _context.SaveChangesAsync();
             return company;

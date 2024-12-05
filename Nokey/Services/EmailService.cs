@@ -23,13 +23,12 @@ namespace CareerCrafter.Services
             try
             {
                 await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                await smtp.AuthenticateAsync("iamnaren01@gmail.com", "pbwkossenbgdngfm"); // Use app password
+                await smtp.AuthenticateAsync("iamnaren01@gmail.com", "pbwkossenbgdngfm"); 
                 await smtp.SendAsync(email);
                 await smtp.DisconnectAsync(true);
             }
             catch (Exception ex)
             {
-                // Log the exception or handle it accordingly
                 Console.WriteLine($"Email sending failed: {ex.Message}");
                 throw;
             }

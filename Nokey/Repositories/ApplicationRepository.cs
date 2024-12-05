@@ -31,8 +31,8 @@ namespace CareerCrafter.Repositories
             return await _context.Applications
                 .Join(
                     _context.Jobs,
-                    application => application.JobId,  // foreign key to Jobs
-                    job => job.Id,                      // primary key of Jobs
+                    application => application.JobId,  
+                    job => job.Id,                      
                     (application, job) => new
                     {
                         JobId = job.Id,
@@ -41,14 +41,14 @@ namespace CareerCrafter.Repositories
                         application.Status,
                         application.CreatedAt,
                         application.UpdatedAt,
-                        JobTitle = job.Title,           // Job Title
-                        JobDescription = job.Description, // Job Description
-                        JobSalary = job.Salary,        // Job Salary
-                        JobCreatedAt = job.CreatedAt,  // Job Creation Date
-                        Requirements = job.Requirements // Job Requirements
+                        JobTitle = job.Title,           
+                        JobDescription = job.Description,
+                        JobSalary = job.Salary,       
+                        JobCreatedAt = job.CreatedAt,  
+                        Requirements = job.Requirements 
                     })
-                .Where(a => a.ApplicantId == userId) // Filtering applications by ApplicantId
-                .OrderByDescending(a => a.CreatedAt) // Order by application creation date
+                .Where(a => a.ApplicantId == userId) 
+                .OrderByDescending(a => a.CreatedAt) 
                 .ToListAsync();
         }
 
@@ -58,18 +58,7 @@ namespace CareerCrafter.Repositories
             return await _context.Applications.FindAsync(applicationId);
         }
 
-        //public async Task UpdateApplicationStatusAsync(Application application, string status)
-        //{
-        //    if (Enum.TryParse<ApplicationStatus>(status, true, out var parsedStatus))
-        //    {
-        //        application.Status = parsedStatus;
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    else
-        //    {
-        //        throw new ArgumentException($"Invalid status value: {status}");
-        //    }
-        //}
+
 
         public async Task<IEnumerable<object>> GetApplicantsByJobAsync(int jobId)
         {

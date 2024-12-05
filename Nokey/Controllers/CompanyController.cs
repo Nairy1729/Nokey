@@ -43,10 +43,8 @@ namespace CareerCrafter.Controllers
                     return Unauthorized(new { message = "User is not authenticated." });
                 }
 
-                // Assign the authenticated user's ID to the company
                 company.PersonId = personId;
 
-                // Register the company
                 var result = await _companyRepository.RegisterCompanyAsync(company, personId);
                 return CreatedAtAction(nameof(GetCompanyById), new { id = result.Id }, result);
             }
@@ -106,7 +104,6 @@ namespace CareerCrafter.Controllers
                 return BadRequest(new { message = "Updated company details are required.", success = false });
             }
 
-            // Validate the LogoUrl if provided
             if (!string.IsNullOrWhiteSpace(updatedCompany.LogoUrl) &&
                 !Uri.IsWellFormedUriString(updatedCompany.LogoUrl, UriKind.Absolute))
             {
@@ -115,7 +112,6 @@ namespace CareerCrafter.Controllers
 
             try
             {
-                // Update the company using the repository
                 var updated = await _companyRepository.UpdateCompanyAsync(id, updatedCompany);
 
                 if (updated == null)
